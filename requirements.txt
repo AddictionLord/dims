@@ -1,0 +1,19 @@
+# Core testing dependencies
+pytest>=7.0.0
+pytest-timeout>=2.1.0
+debugpy>=1.6.0
+
+# Array/tensor libraries for testing
+numpy>=1.20.0
+
+# Optional: PyTorch for tensor testing
+# Uncomment to test PyTorch tensor support
+# torch>=1.9.0
+
+# Optional: TensorFlow for tensor testing
+# Uncomment to test TensorFlow tensor support
+# tensorflow>=2.5.0
+
+# Optional: pandas for DataFrame testing
+# Uncomment to test pandas DataFrame support
+# pandas>=1.3.0

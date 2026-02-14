@@ -11,3 +11,8 @@ vsc-extension-quickstart.md
 node_modules/**
 .git/**
 DIMS_PROJECT_PLAN.md
+test/**
+pytest.ini
+requirements.txt
+requirements-dev.txt
+examples/**

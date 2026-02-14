@@ -1,11 +1,11 @@
 """
-Test script to verify dims extension functionality.
+Manual debugging demo script for dims extension.
 
-To test:
+Usage:
 1. Install the dims extension in VSCode
-2. Set a breakpoint on any line below
-3. Start debugging this file
-4. Check the Variables view - you should see shape info prepended to arrays/lists
+2. Set breakpoints on lines below
+3. Start debugging this file (F5)
+4. Check the Variables view - you should see shape info
 
 Expected output in Variables view:
 - arr_2d: {[2, 3]}, array([[1, 2, 3], [4, 5, 6]])
@@ -15,26 +15,22 @@ Expected output in Variables view:
 
 import numpy as np
 
-# Test NumPy arrays
+# NumPy arrays with .shape attribute
+arr_1d = np.array([1, 2, 3, 4, 5])
 arr_2d = np.array([[1, 2, 3], [4, 5, 6]])
 arr_3d = np.zeros((2, 3, 4))
 
-# Test lists
+# Standard Python collections
 my_list = [1, 2, 3, 4, 5]
 nested_list = [[1, 2], [3, 4], [5, 6]]
-
-# Test dicts
 my_dict = {'a': 1, 'b': 2}
-
-# Test sets
 my_set = {1, 2, 3, 4}
-
-# Test tuples
 my_tuple = (1, 2, 3)
 
-# Test strings (should NOT show length)
+# Strings should NOT show length (to avoid noise)
 my_string = "hello world"
 
-print("Set a breakpoint and debug to see dims in action!")
+# Set a breakpoint here and inspect variables
 print(f"Array shape: {arr_2d.shape}")
 print(f"List length: {len(my_list)}")
+print("Check the Variables view in the debugger!")
