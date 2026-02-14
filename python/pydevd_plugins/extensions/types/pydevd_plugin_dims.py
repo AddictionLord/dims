@@ -16,10 +16,11 @@ Examples:
     str:      unchanged             →  strings are excluded (noisy)
 """
 
+from typing import Any, Optional
 from _pydevd_bundle.pydevd_extension_api import StrPresentationProvider
 
 
-def _find_mod_attr(mod_name, attr_name):
+def _find_mod_attr(mod_name: str, attr_name: str) -> Optional[Any]:
     """Safely import a module and get an attribute, returning None on failure."""
     import sys
     try:
@@ -44,7 +45,7 @@ class DimsShapeStr:
     Strings are excluded to avoid noise.
     """
 
-    def can_provide(self, type_object, type_name):
+    def can_provide(self, type_object: type, type_name: str) -> bool:
         # Exclude strings — showing length of every string is noise
         if issubclass(type_object, str):
             return False
@@ -52,7 +53,7 @@ class DimsShapeStr:
         sized_obj = _find_mod_attr('collections.abc', 'Sized')
         return sized_obj is not None and issubclass(type_object, sized_obj)
 
-    def get_str(self, val):
+    def get_str(self, val: Any) -> str:
         try:
             if hasattr(val, 'shape'):
                 shape = val.shape

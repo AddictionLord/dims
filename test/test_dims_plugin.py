@@ -7,6 +7,7 @@ correctly formats shape information for various Python objects.
 
 import sys
 import os
+from typing import Generator
 import pytest
 import numpy as np
 from unittest.mock import Mock
@@ -26,50 +27,50 @@ from pydevd_plugins.extensions.types.pydevd_plugin_dims import DimsShapeStr
 
 
 @pytest.fixture
-def provider():
+def provider() -> Generator[DimsShapeStr, None, None]:
     """Create a DimsShapeStr instance for testing."""
-    return DimsShapeStr()
+    yield DimsShapeStr()
 
 
 # Core functionality tests
 
-def test_can_provide_numpy_array(provider):
+def test_can_provide_numpy_array(provider: DimsShapeStr) -> None:
     """Test that provider accepts numpy arrays."""
     arr = np.array([1, 2, 3])
     assert provider.can_provide(type(arr), type(arr).__name__)
 
 
-def test_can_provide_list(provider):
+def test_can_provide_list(provider: DimsShapeStr) -> None:
     """Test that provider accepts lists."""
     lst = [1, 2, 3]
     assert provider.can_provide(type(lst), type(lst).__name__)
 
 
-def test_can_provide_dict(provider):
+def test_can_provide_dict(provider: DimsShapeStr) -> None:
     """Test that provider accepts dicts."""
     d = {'a': 1, 'b': 2}
     assert provider.can_provide(type(d), type(d).__name__)
 
 
-def test_can_provide_tuple(provider):
+def test_can_provide_tuple(provider: DimsShapeStr) -> None:
     """Test that provider accepts tuples."""
     t = (1, 2, 3)
     assert provider.can_provide(type(t), type(t).__name__)
 
 
-def test_can_provide_set(provider):
+def test_can_provide_set(provider: DimsShapeStr) -> None:
     """Test that provider accepts sets."""
     s = {1, 2, 3}
     assert provider.can_provide(type(s), type(s).__name__)
 
 
-def test_cannot_provide_string(provider):
+def test_cannot_provide_string(provider: DimsShapeStr) -> None:
     """Test that provider rejects strings to avoid noise."""
     s = "hello"
     assert not provider.can_provide(type(s), type(s).__name__)
 
 
-def test_get_str_numpy_array_1d(provider):
+def test_get_str_numpy_array_1d(provider: DimsShapeStr) -> None:
     """Test shape display for 1D numpy array."""
     arr = np.array([1, 2, 3])
     result = provider.get_str(arr)
@@ -77,21 +78,21 @@ def test_get_str_numpy_array_1d(provider):
     assert '[1 2 3]' in result
 
 
-def test_get_str_numpy_array_2d(provider):
+def test_get_str_numpy_array_2d(provider: DimsShapeStr) -> None:
     """Test shape display for 2D numpy array."""
     arr = np.array([[1, 2, 3], [4, 5, 6]])
     result = provider.get_str(arr)
     assert result.startswith('{[2, 3]}')
 
 
-def test_get_str_numpy_array_3d(provider):
+def test_get_str_numpy_array_3d(provider: DimsShapeStr) -> None:
     """Test shape display for 3D numpy array."""
     arr = np.zeros((2, 3, 4))
     result = provider.get_str(arr)
     assert result.startswith('{[2, 3, 4]}')
 
 
-def test_get_str_list(provider):
+def test_get_str_list(provider: DimsShapeStr) -> None:
     """Test length display for list."""
     lst = [1, 2, 3, 4, 5]
     result = provider.get_str(lst)
@@ -99,14 +100,14 @@ def test_get_str_list(provider):
     assert '[1, 2, 3, 4, 5]' in result
 
 
-def test_get_str_dict(provider):
+def test_get_str_dict(provider: DimsShapeStr) -> None:
     """Test length display for dict."""
     d = {'a': 1, 'b': 2}
     result = provider.get_str(d)
     assert result.startswith('{2}')
 
 
-def test_get_str_tuple(provider):
+def test_get_str_tuple(provider: DimsShapeStr) -> None:
     """Test length display for tuple."""
     t = (1, 2, 3)
     result = provider.get_str(t)
@@ -114,28 +115,28 @@ def test_get_str_tuple(provider):
     assert '(1, 2, 3)' in result
 
 
-def test_get_str_set(provider):
+def test_get_str_set(provider: DimsShapeStr) -> None:
     """Test length display for set."""
     s = {1, 2, 3, 4}
     result = provider.get_str(s)
     assert result.startswith('{4}')
 
 
-def test_get_str_empty_list(provider):
+def test_get_str_empty_list(provider: DimsShapeStr) -> None:
     """Test length display for empty list."""
     lst = []
     result = provider.get_str(lst)
     assert result.startswith('{0}')
 
 
-def test_get_str_nested_list(provider):
+def test_get_str_nested_list(provider: DimsShapeStr) -> None:
     """Test length display for nested list."""
     lst = [[1, 2], [3, 4], [5, 6]]
     result = provider.get_str(lst)
     assert result.startswith('{3}')  # Outer list length
 
 
-def test_get_str_exception_handling(provider):
+def test_get_str_exception_handling(provider: DimsShapeStr) -> None:
     """Test that exceptions in get_str are handled gracefully."""
     # Create a mock object that has .shape but raises on access
     mock_obj = Mock()
@@ -154,7 +155,7 @@ def test_get_str_exception_handling(provider):
     'torch' not in sys.modules,
     reason="PyTorch not installed"
 )
-def test_can_provide_torch_tensor(provider):
+def test_can_provide_torch_tensor(provider: DimsShapeStr) -> None:
     """Test that provider accepts PyTorch tensors."""
     import torch
     tensor = torch.tensor([1, 2, 3])
@@ -165,7 +166,7 @@ def test_can_provide_torch_tensor(provider):
     'torch' not in sys.modules,
     reason="PyTorch not installed"
 )
-def test_get_str_torch_tensor_1d(provider):
+def test_get_str_torch_tensor_1d(provider: DimsShapeStr) -> None:
     """Test shape display for 1D PyTorch tensor."""
     import torch
     tensor = torch.tensor([1., 2., 3.])
@@ -177,7 +178,7 @@ def test_get_str_torch_tensor_1d(provider):
     'torch' not in sys.modules,
     reason="PyTorch not installed"
 )
-def test_get_str_torch_tensor_2d(provider):
+def test_get_str_torch_tensor_2d(provider: DimsShapeStr) -> None:
     """Test shape display for 2D PyTorch tensor."""
     import torch
     tensor = torch.tensor([[1., 2., 3.], [4., 5., 6.]])
@@ -189,7 +190,7 @@ def test_get_str_torch_tensor_2d(provider):
     'torch' not in sys.modules,
     reason="PyTorch not installed"
 )
-def test_get_str_torch_tensor_3d(provider):
+def test_get_str_torch_tensor_3d(provider: DimsShapeStr) -> None:
     """Test shape display for 3D PyTorch tensor."""
     import torch
     tensor = torch.zeros(2, 3, 4)
@@ -203,7 +204,7 @@ def test_get_str_torch_tensor_3d(provider):
     'pandas' not in sys.modules,
     reason="pandas not installed"
 )
-def test_can_provide_dataframe(provider):
+def test_can_provide_dataframe(provider: DimsShapeStr) -> None:
     """Test that provider accepts pandas DataFrames."""
     import pandas as pd
     df = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})
@@ -214,7 +215,7 @@ def test_can_provide_dataframe(provider):
     'pandas' not in sys.modules,
     reason="pandas not installed"
 )
-def test_get_str_dataframe(provider):
+def test_get_str_dataframe(provider: DimsShapeStr) -> None:
     """Test shape display for pandas DataFrame."""
     import pandas as pd
     df = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})
@@ -227,7 +228,7 @@ def test_get_str_dataframe(provider):
     'pandas' not in sys.modules,
     reason="pandas not installed"
 )
-def test_can_provide_series(provider):
+def test_can_provide_series(provider: DimsShapeStr) -> None:
     """Test that provider accepts pandas Series."""
     import pandas as pd
     series = pd.Series([1, 2, 3, 4, 5])
@@ -238,7 +239,7 @@ def test_can_provide_series(provider):
     'pandas' not in sys.modules,
     reason="pandas not installed"
 )
-def test_get_str_series(provider):
+def test_get_str_series(provider: DimsShapeStr) -> None:
     """Test shape display for pandas Series."""
     import pandas as pd
     series = pd.Series([1, 2, 3, 4, 5])
