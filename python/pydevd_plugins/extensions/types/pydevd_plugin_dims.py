@@ -1,71 +1,83 @@
-"""
-dims - Display shapes of arrays, tensors, and sized objects in the debugger.
-
-This is a pydevd extension plugin that modifies how variables are displayed
-in the VSCode debug variables view. It prepends shape/size information
-to the string representation of objects that have a .shape attribute
-or implement collections.abc.Sized.
-
-Examples:
-    ndarray:  {[2, 3]}, [[1 2 3]    →  shape is [2, 3]
-    Tensor:   {[2, 3]}, tensor(...)  →  shape is [2, 3]
-    list:     {3}, [1, 2, 3]        →  length is 3
-    dict:     {2}, {1: 2, 3: 4}     →  length is 2
-    set:      {3}, {1, 2, 3}        →  length is 3
-    tuple:    {3}, (1, 2, 3)        →  length is 3
-    str:      unchanged             →  strings are excluded (noisy)
-"""
-
+import sys
 from typing import Any, Optional
+
 from _pydevd_bundle.pydevd_extension_api import StrPresentationProvider
 
 
 def _find_mod_attr(mod_name: str, attr_name: str) -> Optional[Any]:
-    """Safely import a module and get an attribute, returning None on failure."""
-    import sys
-    try:
-        mod = sys.modules.get(mod_name)
-        if mod is None:
+    """Safely import a module and get an attribute.
+
+    Args:
+        mod_name: Fully qualified module name to import.
+        attr_name: Attribute name to retrieve from the module.
+
+    Returns:
+        Optional[Any]: The requested attribute if found, None otherwise.
+
+    """
+    mod = sys.modules.get(mod_name)
+    if mod is None:
+        try:
             __import__(mod_name)
             mod = sys.modules[mod_name]
-        return getattr(mod, attr_name, None)
-    except Exception:
-        return None
+        except (ImportError, KeyError):
+            return None
+
+    return getattr(mod, attr_name, None)
 
 
 class DimsShapeStr:
-    """Displays the size/shape of a Sized object before displaying its value.
+    """Display shape/size information for Sized objects in the debugger.
 
-    For objects with a .shape attribute (numpy arrays, PyTorch tensors, etc.),
-    shows the shape as a list: {[2, 3, 4]}, tensor(...)
+    Prepends shape or length information to variable string representations
+    in the VSCode debug variables view. Objects with a .shape attribute
+    (NumPy arrays, PyTorch tensors) show their shape. Other sized collections
+    (list, dict, set, tuple) show their length. Strings are excluded to
+    reduce noise.
 
-    For other Sized objects (list, dict, set, tuple),
-    shows the length: {3}, [1, 2, 3]
+    Attributes:
+        None (stateless provider).
 
-    Strings are excluded to avoid noise.
     """
 
     def can_provide(self, type_object: type, type_name: str) -> bool:
-        # Exclude strings — showing length of every string is noise
+        """Check if this provider can format the given type.
+
+        Args:
+            type_object: The type to check.
+            type_name: String name of the type (unused).
+
+        Returns:
+            bool: True if this provider handles the type, False otherwise.
+
+        """
         if issubclass(type_object, str):
             return False
 
-        sized_obj = _find_mod_attr('collections.abc', 'Sized')
-        return sized_obj is not None and issubclass(type_object, sized_obj)
+        sized_obj = _find_mod_attr("collections.abc", "Sized")
+        if sized_obj is None:
+            return False
+
+        return issubclass(type_object, sized_obj)
 
     def get_str(self, val: Any) -> str:
+        """Generate string representation with shape/size prefix.
+
+        Args:
+            val: The object to format.
+
+        Returns:
+            str: Formatted string with shape/size prefix, or fallback string.
+
+        """
         try:
-            if hasattr(val, 'shape'):
+            if hasattr(val, "shape"):
                 shape = val.shape
-                # Handle both tuple shapes and torch.Size
-                return '{%s}, %s' % (list(shape), val)
-            return '{%s}, %s' % (len(val), val)
+                return f"{{{list(shape)}}}, {val}"
+            return f"{{{len(val)}}}, {val}"
         except Exception:
-            # Fallback: don't break the debugger if something goes wrong
             return str(val)
 
-
-import sys
 
 if not sys.platform.startswith("java"):
     StrPresentationProvider.register(DimsShapeStr)
