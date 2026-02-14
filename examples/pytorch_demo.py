@@ -13,6 +13,11 @@ Expected output in Variables view:
 - tensor_3d: {[2, 3, 4]}, tensor([[[...]]])
 """
 
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+
 try:
     import torch
 
@@ -26,8 +31,8 @@ try:
     float_tensor = torch.randn(3, 4)
 
     # Set a breakpoint here and inspect variables
-    print(f"Tensor shape: {tensor_2d.shape}")
-    print("Check the Variables view in the debugger!")
+    logging.info("Tensor shape: %s", tensor_2d.shape)
+    logging.info("Check the Variables view in the debugger!")
 
 except ImportError:
-    print("PyTorch not installed. Install with: pip install torch")
+    logging.error("PyTorch not installed. Install with: pip install torch")

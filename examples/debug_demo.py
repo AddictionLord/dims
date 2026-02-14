@@ -13,7 +13,11 @@ Expected output in Variables view:
 - my_dict: {2}, {'a': 1, 'b': 2}
 """
 
+import logging
 import numpy as np
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 # NumPy arrays with .shape attribute
 arr_1d = np.array([1, 2, 3, 4, 5])
@@ -31,6 +35,6 @@ my_tuple = (1, 2, 3)
 my_string = "hello world"
 
 # Set a breakpoint here and inspect variables
-print(f"Array shape: {arr_2d.shape}")
-print(f"List length: {len(my_list)}")
-print("Check the Variables view in the debugger!")
+logging.info("Array shape: %s", arr_2d.shape)
+logging.info("List length: %d", len(my_list))
+logging.info("Check the Variables view in the debugger!")
