@@ -1,0 +1,68 @@
+{
+  "name": "dims",
+  "displayName": "dims",
+  "description": "See array shapes instantly in the debug variables view",
+  "version": "1.0.0",
+  "publisher": "dims",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/dims-vscode"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Debuggers",
+    "Data Science",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "debug",
+    "shape",
+    "tensor",
+    "numpy",
+    "pytorch",
+    "tensorflow",
+    "pandas",
+    "array",
+    "dimensions",
+    "python"
+  ],
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onDebugResolve:debugpy",
+    "onDebugResolve:python"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "dims",
+      "properties": {
+        "dims.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable shape display in debug variables view"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  }
+}
