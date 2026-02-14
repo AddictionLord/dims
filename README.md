@@ -68,7 +68,3 @@ The plugin adds **zero overhead** — it runs inline during variable serializati
 ## License
 
 MIT
-
----
-
-Find this useful? [Buy me a coffee ☕](https://ko-fi.com/YOUR_KOFI)

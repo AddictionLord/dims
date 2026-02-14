@@ -1,0 +1,36 @@
+[lint]
+select = ["ALL"]
+ignore = [
+    "D203",    # one-blank-line-before-class
+    "D213",    # multi-line-summary-second-line
+    "COM812",  # missing-trailing-comma (conflicts with formatter)
+    "ISC001",  # single-line-implicit-string-concatenation (conflicts with formatter)
+    "UP006",   # Use List instead of list (per project style guide)
+    "UP035",   # typing.List is deprecated (per project style guide)
+    "UP045",   # Use X | None instead of Optional (per project style guide)
+    "D100",    # Missing module docstring (per project style guide)
+    "ANN401",  # typing.Any allowed (required for dynamic typing)
+    "TRY400",  # Use logging.exception (not applicable for ImportError)
+]
+
+[lint.per-file-ignores]
+"python/pydevd_plugins/extensions/types/pydevd_plugin_dims.py" = [
+    "PLC2701",  # Private import _pydevd_bundle (required by pydevd API)
+    "PLR6301",  # Methods could be static (required by interface)
+    "ARG002",   # Unused type_name argument (required by interface)
+    "BLE001",   # Blind except (needed for debugger fallback)
+]
+"test/*.py" = [
+    "S101",     # Use of assert (required in pytest)
+    "PLC0415",  # Import not at top (conditional imports for optional deps)
+    "T100",     # Import for debugpy found
+    "PTH118",   # os.path.join usage (acceptable in test setup)
+    "PTH120",   # os.path.dirname usage (acceptable in test setup)
+]
+"examples/*.py" = [
+    "T201",     # print usage (examples are for demonstration)
+    "INP001",   # Implicit namespace package (examples don't need __init__.py)
+]
+"**/__init__.py" = [
+    "D104",     # Missing docstring in __init__.py (comments are sufficient)
+]

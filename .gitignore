@@ -1,0 +1,9 @@
+out/
+node_modules/
+*.vsix
+.vscode-test/
+*.log
+.DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
