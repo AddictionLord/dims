@@ -1,0 +1,15 @@
+.github/**
+.vscode/**
+src/**
+tests/**
+**/__pycache__/**
+**/*.map
+**/*.ts
+.ruff_cache/**
+node_modules/**
+tsconfig.json
+ruff.toml
+requirements-dev.txt
+DIMS_PROJECT_PLAN.md
+.pytest_cache/**
+*.vsix
