@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2440"/><stop offset="1" stop-color="#0b1020"/></linearGradient>
+</defs>
+<rect x="8" y="8" width="496" height="496" rx="104" fill="url(#bg)"/>
+<g stroke="#0b1020" stroke-width="5" stroke-linejoin="round">
+<polygon points="153.8,203.0 256.0,144.0 358.2,203.0 256.0,262.0" fill="#5eead4"/><line x1="187.9" y1="183.3" x2="290.1" y2="242.3"/><line x1="187.9" y1="222.7" x2="290.1" y2="163.7"/><line x1="221.9" y1="163.7" x2="324.1" y2="222.7"/><line x1="221.9" y1="242.3" x2="324.1" y2="183.3"/>
+<polygon points="153.8,203.0 256.0,262.0 256.0,380.0 153.8,321.0" fill="#14b8a6"/><line x1="187.9" y1="222.7" x2="187.9" y2="340.7"/><line x1="153.8" y1="242.3" x2="256.0" y2="301.3"/><line x1="221.9" y1="242.3" x2="221.9" y2="360.3"/><line x1="153.8" y1="281.7" x2="256.0" y2="340.7"/>
+<polygon points="256.0,262.0 358.2,203.0 358.2,321.0 256.0,380.0" fill="#0f766e"/><line x1="290.1" y1="242.3" x2="290.1" y2="360.3"/><line x1="256.0" y1="301.3" x2="358.2" y2="242.3"/><line x1="324.1" y1="222.7" x2="324.1" y2="340.7"/><line x1="256.0" y1="340.7" x2="358.2" y2="281.7"/>
+</g>
+<polygon points="256.0,144.0 358.2,203.0 358.2,321.0 256.0,380.0 153.8,321.0 153.8,203.0" fill="none" stroke="#0b1020" stroke-width="8" stroke-linejoin="round"/>
+<g fill="none" stroke="#fbbf24" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+<path d="M112 116 C 78 116, 78 140, 78 176 L 78 226 C 78 248, 66 262, 46 262 C 66 262, 78 276, 78 298 L 78 348 C 78 384, 78 408, 112 408"/>
+<path d="M400 116 C 434 116, 434 140, 434 176 L 434 226 C 434 248, 446 262, 466 262 C 446 262, 434 276, 434 298 L 434 348 C 434 384, 434 408, 400 408"/>
+</g>
+</svg>

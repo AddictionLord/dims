@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="images/icon.png" width="128" alt="dims logo">
+
 # dims
 
 **Tensor shapes, right in the VS Code debugger.**
