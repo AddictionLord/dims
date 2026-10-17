@@ -43,7 +43,7 @@ The shape sits in front of every array, tensor and DataFrame; containers get the
 dims is not on the Marketplace yet. Grab the `.vsix` from the [latest release](https://github.com/AddictionLord/dims/releases/latest) and install it:
 
 ```bash
-code --install-extension dims-0.1.0.vsix
+code --install-extension dims-0.1.1.vsix
 ```
 
 Every version bump in `package.json` that lands on `master` is tagged and released automatically.
