@@ -1,45 +1,76 @@
+<div align="center">
+
 # dims
 
-See array shapes instantly in the debug variables view.
+**Tensor shapes, right in the VS Code debugger.**
 
-## Before → After
+Stop typing `.shape` in the debug console.
 
-**Before:** You see `tensor([[0., 0., 0.], ...` and have to type `.shape` in the console.
+[![CI](https://github.com/AddictionLord/dims/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AddictionLord/dims/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/tag/AddictionLord/dims?label=version&sort=semver)](https://github.com/AddictionLord/dims/tags)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.9%20%E2%80%93%203.13-3776AB?logo=python&logoColor=white)
+![VS Code](https://img.shields.io/badge/VS%20Code-1.85%2B-007ACC?logo=visualstudiocode&logoColor=white)
+![Platforms](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-lightgrey)
 
-**After:** You see `{[2, 3]}, tensor([[0., 0., 0.], ...` — the shape is right there.
+</div>
 
+---
+
+```text
+VARIABLES                                   VARIABLES  (with dims)
+  x = tensor([[0.1, 0.4, ...]])     ──►       x = {[8, 3, 224, 224]}, tensor([[0.1, 0.4, ...]])
+  m = array([[1., 0.], ...])        ──►       m = {[512, 512]}, array([[1., 0.], ...])
+  df =     a    b ...               ──►       df = {[10000, 12]},     a    b ...
+  boxes = [[12, 40, 88, 120], ...]  ──►       boxes = {37}, [[12, 40, 88, 120], ...]
 ```
-# Before dims
-n = array([[0., 0., 0.], [0., 0., 0.]])
-t = tensor([[0., 0., 0.], [0., 0., 0.]])
-l = [1, 2, 3]
 
-# After dims
-n = {[2, 3]}, array([[0., 0., 0.], [0., 0., 0.]])
-t = {[2, 3]}, tensor([[0., 0., 0.], [0., 0., 0.]])
-l = {3}, [1, 2, 3]
-```
+The shape sits in front of every array, tensor and DataFrame; containers get their length. Nothing to configure: install, hit **F5**, read shapes.
 
-Works with **NumPy**, **PyTorch**, **TensorFlow**, **pandas**, and any object with a `.shape` attribute or `len()`.
+## Features
+
+- **Shapes for anything with `.shape`**: NumPy, PyTorch, TensorFlow, JAX, pandas, h5py, ...
+- **Lengths for sized containers**: `list`, `tuple`, `dict`, `set`, `range`, ...
+- **No slowdown on huge objects**: values go through pydevd's size-bounded `SafeRepr`; a 5M-element list renders in milliseconds.
+- **pandas included**: debugpy's built-in DataFrame/Series presenters get the shape too.
+- **Clean copies**: *Copy Value* gives the plain value, without the prefix.
+- **Quiet on strings**: `str`, `bytes` and `bytearray` are left alone.
 
 ## Install
 
-1. Install from the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=addictionlord.dims)
-2. Start debugging Python — shapes appear automatically
+dims is not on the Marketplace yet. Until then, build the `.vsix` and install it:
 
-No configuration needed. Just install and debug.
+```bash
+git clone https://github.com/AddictionLord/dims && cd dims
+npm ci && npx vsce package
+code --install-extension dims-*.vsix
+```
+
+Then start any Python **launch** debug session.
+
+## Supported types
+
+| Type | Shows | Example | Tested in CI |
+|------|-------|---------|:---:|
+| NumPy `ndarray` | shape | `{[2, 3]}, array(...)` | ✅ |
+| PyTorch `Tensor` | shape | `{[2, 3]}, tensor(...)` | ✅ when torch is installed |
+| pandas `DataFrame` / `Series` | shape | `{[100, 5]}, ...` | ✅ |
+| TensorFlow / JAX arrays | shape | `{[2, 3]}, ...` | — |
+| `list`, `tuple`, `dict`, `set`, `range` | length | `{3}, [1, 2, 3]` | ✅ |
+| `str`, `bytes`, `bytearray` | unchanged | `'hello'` | ✅ |
 
 ## How it works
 
-dims uses debugpy's official [pydevd extension plugin API](https://github.com/microsoft/debugpy/tree/main/src/debugpy/_vendored/pydevd/pydevd_plugins/extensions) to customize variable display at the debugger level. When you launch a Python debug session, dims prepends its bundled `python/` directory to the debuggee's `PYTHONPATH`; pydevd discovers `pydevd_plugins/extensions/pydevd_plugin_dims.py` there. The plugin:
+```mermaid
+flowchart LR
+    A[F5: Python launch] --> B[dims prepends its python/ dir<br/>to the debuggee's PYTHONPATH]
+    B --> C[pydevd loads<br/>pydevd_plugins.extensions.pydevd_plugin_dims]
+    C --> D["Variables view: {[8, 3, 224, 224]}, tensor(...)"]
+```
 
-1. Handles objects implementing `collections.abc.Sized`, except `str`, `bytes` and `bytearray`
-2. For objects with `.shape` (arrays, tensors, DataFrames): prepends `{[dim1, dim2, ...]}`
-3. For other sized objects (lists, dicts, sets): prepends `{length}`
-4. Renders the value with pydevd's own size-bounded `SafeRepr`, so a 5M-element list stays cheap
-5. Wraps debugpy's bundled pandas presenters so DataFrames and Series get a shape too
+dims uses debugpy's [pydevd extension API](https://github.com/microsoft/debugpy/tree/main/src/debugpy/_vendored/pydevd/pydevd_plugins/extensions): a `StrPresentationProvider` that prepends the shape to pydevd's own value string. Nothing is patched on disk, so debugpy updates don't remove it.
 
-*Copy Value* yields the plain value, without the prefix. Attach sessions are not covered: the plugin can only be injected into processes the debugger launches.
+**Limitation:** attach sessions are not covered. dims can only add the plugin to processes the debugger launches.
 
 ## Configuration
 
@@ -47,32 +78,16 @@ dims uses debugpy's official [pydevd extension plugin API](https://github.com/mi
 |---------|---------|-------------|
 | `dims.enabled` | `true` | Enable/disable shape display |
 
-## Supported types
-
-| Type | Display | Example |
-|------|---------|---------|
-| NumPy ndarray | Shape | `{[2, 3]}, array(...)` |
-| PyTorch Tensor | Shape | `{[2, 3]}, tensor(...)` |
-| TensorFlow Tensor | Shape | `{[2, 3]}, tf.Tensor(...)` |
-| pandas DataFrame / Series | Shape | `{[100, 5]}, ...` |
-| list | Length | `{3}, [1, 2, 3]` |
-| dict | Length | `{2}, {1: 2, 3: 4}` |
-| set | Length | `{3}, {1, 2, 3}` |
-| tuple | Length | `{3}, (1, 2, 3)` |
-| str, bytes | Unchanged | `'hello'` |
-
-## Requirements
-
-- VSCode 1.85+
-- Python Debugger extension (debugpy)
-
 ## Development
 
 ```bash
-npm install && npm run compile && npx vsce package
-pip install -r requirements-dev.txt && python -m pytest tests
+npm ci && npm run compile && npx vsce package        # extension
+pip install -r requirements-dev.txt                  # plugin tests
+python -m pytest tests
 ```
+
+CI runs the plugin tests against real pydevd on Linux, macOS and Windows (Python 3.9 and 3.13), plus ruff and `vsce package`.
 
 ## License
 
-MIT
+[MIT](LICENSE)
