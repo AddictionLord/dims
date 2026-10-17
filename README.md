@@ -38,13 +38,13 @@ The shape sits in front of every array, tensor and DataFrame; containers get the
 
 ## Install
 
-dims is not on the Marketplace yet. Until then, build the `.vsix` and install it:
+dims is not on the Marketplace yet. Grab the `.vsix` from the [latest release](https://github.com/AddictionLord/dims/releases/latest) and install it:
 
 ```bash
-git clone https://github.com/AddictionLord/dims && cd dims
-npm ci && npx vsce package
-code --install-extension dims-*.vsix
+code --install-extension dims-0.1.0.vsix
 ```
+
+Every version bump in `package.json` that lands on `master` is tagged and released automatically.
 
 Then start any Python **launch** debug session.
 
