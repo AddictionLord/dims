@@ -1,0 +1,4 @@
+debugpy
+numpy
+pandas
+pytest
