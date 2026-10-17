@@ -13,3 +13,5 @@ requirements-dev.txt
 DIMS_PROJECT_PLAN.md
 .pytest_cache/**
 *.vsix
+images/icon.svg
+TODO.md
