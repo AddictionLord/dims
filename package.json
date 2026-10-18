@@ -2,12 +2,12 @@
   "name": "dims",
   "displayName": "dims",
   "description": "See array shapes instantly in the debug variables view",
-  "version": "0.1.1",
-  "publisher": "addictionlord",
+  "version": "0.1.2",
+  "publisher": "provaznik",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/addictionlord/dims"
+    "url": "https://github.com/marekprovaznik/dims"
   },
   "engines": {
     "vscode": "^1.85.0"
