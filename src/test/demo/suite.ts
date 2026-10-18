@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 
 const HOLD_MS = 3_500;
 const LAYOUT_MS = 3_000;
+const RELEASE_MS = 500;
 const SECONDARY_DEBUG_VIEWS = [
     'workbench.debug.watchExpressionsView',
     'workbench.debug.callStackView',
@@ -23,7 +24,7 @@ export async function run(): Promise<void> {
 
     const document = await vscode.workspace.openTextDocument(program);
     await vscode.window.showTextDocument(document);
-    const line = document.getText().split(/\r?\n/).findIndex((text) => text.startsWith('print('));
+    const line = document.getText().split(/\r?\n/).findIndex((text) => text.trim().startsWith('print('));
     const location = new vscode.Location(document.uri, new vscode.Position(line, 0));
     vscode.debug.addBreakpoints([new vscode.SourceBreakpoint(location)]);
 
@@ -32,12 +33,12 @@ export async function run(): Promise<void> {
         destinationId: 'workbench.view.explorer',
     });
     await vscode.commands.executeCommand('workbench.view.debug');
-    await debugAndHold(workspace, program, LAYOUT_MS, () => fs.writeFileSync(phaseFile, 'layout'));
+    const setPhase = (phase: string) => () => fs.writeFileSync(phaseFile, phase);
+    await debugAndHold(workspace, program, LAYOUT_MS, setPhase('layout'), setPhase('idle'));
 
     for (const enabled of [false, true]) {
         await vscode.workspace.getConfiguration('dims').update('enabled', enabled, vscode.ConfigurationTarget.Global);
-        fs.writeFileSync(phaseFile, enabled ? 'with dims' : 'without dims');
-        await debugAndHold(workspace, program, HOLD_MS);
+        await debugAndHold(workspace, program, HOLD_MS, setPhase(enabled ? 'with dims' : 'without dims'), setPhase('idle'));
     }
 
     fs.writeFileSync(phaseFile, 'done');
@@ -48,7 +49,8 @@ async function debugAndHold(
     folder: vscode.WorkspaceFolder,
     program: string,
     holdMs: number,
-    onStopped: () => void = () => {},
+    onStopped: () => void,
+    onRelease: () => void,
 ): Promise<void> {
     const stopped = new Promise<vscode.DebugSession>((resolve) => {
         const registration = vscode.debug.registerDebugAdapterTrackerFactory('debugpy', {
@@ -75,6 +77,8 @@ async function debugAndHold(
     const session = await stopped;
     onStopped();
     await sleep(holdMs);
+    onRelease();
+    await sleep(RELEASE_MS);
 
     const terminated = new Promise<void>((resolve) => {
         const registration = vscode.debug.onDidTerminateDebugSession((ended) => {

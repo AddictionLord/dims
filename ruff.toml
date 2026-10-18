@@ -4,3 +4,6 @@ line-length = 120
 [lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "RUF"]
 ignore = ["UP031"]
+
+[lint.per-file-ignores]
+"src/test/demo/workspace/*.py" = ["F841"]

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5 (2026-10-18)
+
+- README: static before/after screenshot instead of the demo GIF.
+
 ## 0.1.4 (2026-10-18)
 
 - README: demo GIF, Marketplace badges, known limitations (attach, notebooks) with a manual workaround.
