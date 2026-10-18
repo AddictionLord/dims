@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] **End-to-end check in VS Code**: run a real launch session (ideally automated with `@vscode/test-electron`) and confirm shapes show in the Variables view.
+- [x] **End-to-end check in VS Code**: run a real launch session (ideally automated with `@vscode/test-electron`) and confirm shapes show in the Variables view.
 - [ ] **`envFile` PYTHONPATH**: verify that a `PYTHONPATH` set in `.env` survives alongside the injected plugin path, rather than being overwritten.
 - [ ] **Demo GIF** for the README and Marketplace page (before/after, ~10 s).
 - [x] **Marketplace publisher**: `provaznik` created at <https://marketplace.visualstudio.com/manage>.

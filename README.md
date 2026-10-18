@@ -86,9 +86,10 @@ dims uses debugpy's [pydevd extension API](https://github.com/microsoft/debugpy/
 npm ci && npm run compile && npx vsce package        # extension
 pip install -r requirements-dev.txt                  # plugin tests
 python -m pytest tests
+npm test                                             # end-to-end, needs python3 with numpy
 ```
 
-CI runs the plugin tests against real pydevd on Linux, macOS and Windows (Python 3.9 and 3.13), plus ruff and `vsce package`.
+CI runs the plugin tests against real pydevd on Linux, macOS and Windows (Python 3.9 and 3.13), plus ruff and `vsce package`. The end-to-end test (`npm test`) launches VS Code with the Python Debugger extension, stops at a breakpoint in `src/test/fixture/script.py` and checks the values the Variables view receives; set `DIMS_E2E_PYTHON` to pick the interpreter.
 
 ## License
 

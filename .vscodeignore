@@ -15,3 +15,5 @@ DIMS_PROJECT_PLAN.md
 *.vsix
 images/icon.svg
 TODO.md
+out/test/**
+.vscode-test/**
