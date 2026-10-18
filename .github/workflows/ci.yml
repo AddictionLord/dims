@@ -39,3 +39,24 @@ jobs:
       - run: npm ci
       - run: npm run compile
       - run: npx vsce package
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install numpy
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: .vscode-test
+          key: vscode-test-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: xvfb-run -a npm test
+        env:
+          DIMS_E2E_PYTHON: python
