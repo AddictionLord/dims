@@ -8,8 +8,8 @@
 
 Stop typing `.shape` in the debug console.
 
-[![CI](https://github.com/AddictionLord/dims/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AddictionLord/dims/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/tag/AddictionLord/dims?label=version&sort=semver)](https://github.com/AddictionLord/dims/tags)
+[![CI](https://github.com/marekprovaznik/dims/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marekprovaznik/dims/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/tag/marekprovaznik/dims?label=version&sort=semver)](https://github.com/marekprovaznik/dims/tags)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.9%20%E2%80%93%203.13-3776AB?logo=python&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85%2B-007ACC?logo=visualstudiocode&logoColor=white)
@@ -40,7 +40,7 @@ The shape sits in front of every array, tensor and DataFrame; containers get the
 
 ## Install
 
-dims is not on the Marketplace yet. Grab the `.vsix` from the [latest release](https://github.com/AddictionLord/dims/releases/latest) and install it:
+dims is not on the Marketplace yet. Grab the `.vsix` from the [latest release](https://github.com/marekprovaznik/dims/releases/latest) and install it:
 
 ```bash
 code --install-extension dims-0.1.1.vsix

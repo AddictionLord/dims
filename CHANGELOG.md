@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 (2026-10-18)
+
+- Marketplace publisher `provaznik`; repository moved to github.com/marekprovaznik/dims.
+
 ## 0.1.1 (2026-10-17)
 
 - Extension icon.
