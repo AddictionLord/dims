@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 (2026-10-18)
+
+- Published on the VS Code Marketplace as `provaznik.dims`.
+- End-to-end test: a real debugpy session in VS Code checks the values shown in the Variables view.
+
 ## 0.1.2 (2026-10-18)
 
 - Marketplace publisher `provaznik`; repository moved to github.com/marekprovaznik/dims.

@@ -40,13 +40,15 @@ The shape sits in front of every array, tensor and DataFrame; containers get the
 
 ## Install
 
-dims is not on the Marketplace yet. Grab the `.vsix` from the [latest release](https://github.com/marekprovaznik/dims/releases/latest) and install it:
+Search for **dims** in the Extensions view (`Ctrl+Shift+X`), or run:
 
 ```bash
-code --install-extension dims-0.1.1.vsix
+code --install-extension provaznik.dims
 ```
 
-Every version bump in `package.json` that lands on `master` is tagged and released automatically.
+Each [GitHub release](https://github.com/marekprovaznik/dims/releases/latest) also carries the `.vsix` for offline installs (`code --install-extension dims-<version>.vsix`).
+
+If you previously patched debugpy by hand to show shapes (a `SizedShapeStr` provider in `pydevd_plugins/extensions/types/`), remove that file: it takes precedence over dims and renders values with an unbounded `str()`.
 
 Then start any Python **launch** debug session.
 

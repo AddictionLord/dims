@@ -2,7 +2,7 @@
   "name": "dims",
   "displayName": "dims",
   "description": "See array shapes instantly in the debug variables view",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "provaznik",
   "license": "MIT",
   "repository": {
