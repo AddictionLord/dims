@@ -7,12 +7,15 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - id: version
@@ -23,9 +26,9 @@ jobs:
             echo "exists=true" >> "$GITHUB_OUTPUT"
           fi
       - if: steps.version.outputs.exists != 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
       - if: steps.version.outputs.exists != 'true'
         run: npm ci && npx vsce package
@@ -37,3 +40,13 @@ jobs:
             --target "$GITHUB_SHA" \
             --title "dims ${{ steps.version.outputs.tag }}" \
             --notes-file CHANGELOG.md
+      - if: steps.version.outputs.exists != 'true' && vars.AZURE_CLIENT_ID != ''
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+      - if: steps.version.outputs.exists != 'true' && vars.AZURE_CLIENT_ID != ''
+        run: npx vsce publish --packagePath dims-*.vsix --azure-credential
+      - if: steps.version.outputs.exists != 'true' && env.OVSX_PAT != ''
+        run: npx ovsx publish dims-*.vsix
