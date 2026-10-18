@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4 (2026-10-18)
+
+- README: demo GIF, Marketplace badges, known limitations (attach, notebooks) with a manual workaround.
+- End-to-end test covers `PYTHONPATH` from `envFile` surviving next to the plugin path.
+- CI: PyTorch tests on Linux, actions on Node 24; releases publish to the Marketplace and Open VSX once credentials are configured.
+
 ## 0.1.3 (2026-10-18)
 
 - Published on the VS Code Marketplace as `provaznik.dims`.

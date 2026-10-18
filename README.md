@@ -9,7 +9,8 @@
 Stop typing `.shape` in the debug console.
 
 [![CI](https://github.com/marekprovaznik/dims/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marekprovaznik/dims/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/tag/marekprovaznik/dims?label=version&sort=semver)](https://github.com/marekprovaznik/dims/tags)
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/provaznik.dims?label=marketplace)](https://marketplace.visualstudio.com/items?itemName=provaznik.dims)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/provaznik.dims)](https://marketplace.visualstudio.com/items?itemName=provaznik.dims)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.9%20%E2%80%93%203.13-3776AB?logo=python&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85%2B-007ACC?logo=visualstudiocode&logoColor=white)
@@ -18,6 +19,8 @@ Stop typing `.shape` in the debug console.
 </div>
 
 ---
+
+![dims demo: the same breakpoint without and with dims](images/demo.gif)
 
 ```text
 VARIABLES                                   VARIABLES  (with dims)
@@ -57,7 +60,7 @@ Then start any Python **launch** debug session.
 | Type | Shows | Example | Tested in CI |
 |------|-------|---------|:---:|
 | NumPy `ndarray` | shape | `{[2, 3]}, array(...)` | ✅ |
-| PyTorch `Tensor` | shape | `{[2, 3]}, tensor(...)` | ✅ when torch is installed |
+| PyTorch `Tensor` | shape | `{[2, 3]}, tensor(...)` | ✅ |
 | pandas `DataFrame` / `Series` | shape | `{[100, 5]}, ...` | ✅ |
 | TensorFlow / JAX arrays | shape | `{[2, 3]}, ...` | — |
 | `list`, `tuple`, `dict`, `set`, `range` | length | `{3}, [1, 2, 3]` | ✅ |
@@ -65,16 +68,30 @@ Then start any Python **launch** debug session.
 
 ## How it works
 
-```mermaid
-flowchart LR
-    A[F5: Python launch] --> B[dims prepends its python/ dir<br/>to the debuggee's PYTHONPATH]
-    B --> C[pydevd loads<br/>pydevd_plugins.extensions.pydevd_plugin_dims]
-    C --> D["Variables view: {[8, 3, 224, 224]}, tensor(...)"]
-```
+1. **F5** starts a Python launch session.
+2. dims prepends its bundled `python/` directory to the debuggee's `PYTHONPATH` (entries from `env` and `envFile` are kept).
+3. pydevd inside debugpy discovers `pydevd_plugins.extensions.pydevd_plugin_dims`.
+4. The Variables view shows `{[8, 3, 224, 224]}, tensor(...)`.
 
 dims uses debugpy's [pydevd extension API](https://github.com/microsoft/debugpy/tree/main/src/debugpy/_vendored/pydevd/pydevd_plugins/extensions): a `StrPresentationProvider` that prepends the shape to pydevd's own value string. Nothing is patched on disk, so debugpy updates don't remove it.
 
-**Limitation:** attach sessions are not covered. dims can only add the plugin to processes the debugger launches.
+## Known limitations
+
+dims can only add its plugin to processes the debugger **launches**. These are not covered automatically:
+
+- **Attach sessions** (`"request": "attach"`): a training job on a cluster, in a container, or started with `python -m debugpy --listen ...`.
+- **Notebook / Jupyter debugging**: the kernel is started outside the debug launch (untested).
+
+Workaround: the plugin is a single file with no dependencies. Put [`pydevd_plugin_dims.py`](python/pydevd_plugins/extensions/pydevd_plugin_dims.py) into a `pydevd_plugins/extensions/` directory and add that directory's parent to the target process's `PYTHONPATH` before it starts:
+
+```bash
+mkdir -p ~/dims/pydevd_plugins/extensions
+curl -sL https://raw.githubusercontent.com/marekprovaznik/dims/master/python/pydevd_plugins/extensions/pydevd_plugin_dims.py \
+    -o ~/dims/pydevd_plugins/extensions/pydevd_plugin_dims.py
+PYTHONPATH=~/dims:$PYTHONPATH python -m debugpy --listen 5678 --wait-for-client train.py
+```
+
+Launch sessions over Remote-SSH, Dev Containers and WSL should work as usual: install dims on the remote side like any other extension.
 
 ## Configuration
 
@@ -89,9 +106,10 @@ npm ci && npm run compile && npx vsce package        # extension
 pip install -r requirements-dev.txt                  # plugin tests
 python -m pytest tests
 npm test                                             # end-to-end, needs python3 with numpy
+npm run demo                                         # re-record images/demo.gif, needs numpy, pandas, torch and ffmpeg
 ```
 
-CI runs the plugin tests against real pydevd on Linux, macOS and Windows (Python 3.9 and 3.13), plus ruff and `vsce package`. The end-to-end test (`npm test`) launches VS Code with the Python Debugger extension, stops at a breakpoint in `src/test/fixture/script.py` and checks the values the Variables view receives; set `DIMS_E2E_PYTHON` to pick the interpreter.
+CI runs the plugin tests against real pydevd on Linux, macOS and Windows (Python 3.9 and 3.13, PyTorch on Linux 3.13), plus ruff and `vsce package`. The end-to-end test (`npm test`) launches VS Code with the Python Debugger extension, stops at a breakpoint in `src/test/fixture/script.py` and checks the values the Variables view receives; set `DIMS_E2E_PYTHON` to pick the interpreter.
 
 ## License
 
