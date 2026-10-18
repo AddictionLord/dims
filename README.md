@@ -9,8 +9,9 @@
 Stop typing `.shape` in the debug console.
 
 [![CI](https://github.com/marekprovaznik/dims/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marekprovaznik/dims/actions/workflows/ci.yml)
-[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/provaznik.dims?label=marketplace)](https://marketplace.visualstudio.com/items?itemName=provaznik.dims)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/provaznik.dims)](https://marketplace.visualstudio.com/items?itemName=provaznik.dims)
+[![Marketplace](https://vsmarketplacebadges.dev/version/provaznik.dims.svg?label=marketplace)](https://marketplace.visualstudio.com/items?itemName=provaznik.dims)
+[![Installs](https://vsmarketplacebadges.dev/installs-short/provaznik.dims.svg)](https://marketplace.visualstudio.com/items?itemName=provaznik.dims)
+[![Open VSX](https://img.shields.io/open-vsx/v/provaznik/dims?label=open%20vsx)](https://open-vsx.org/extension/provaznik/dims)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.9%20%E2%80%93%203.13-3776AB?logo=python&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85%2B-007ACC?logo=visualstudiocode&logoColor=white)
@@ -48,6 +49,8 @@ Search for **dims** in the Extensions view (`Ctrl+Shift+X`), or run:
 ```bash
 code --install-extension provaznik.dims
 ```
+
+Cursor, Windsurf and VSCodium install it the same way from [Open VSX](https://open-vsx.org/extension/provaznik/dims).
 
 Each [GitHub release](https://github.com/marekprovaznik/dims/releases/latest) also carries the `.vsix` for offline installs (`code --install-extension dims-<version>.vsix`).
 
