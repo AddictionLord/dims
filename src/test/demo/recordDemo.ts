@@ -5,16 +5,20 @@ import * as path from 'path';
 import { downloadAndUnzipVSCode, resolveCliArgsFromVSCodeExecutablePath, runTests } from '@vscode/test-electron';
 
 /**
- * Records `images/demo.gif`: runs `suite.ts` in VS Code with remote debugging
+ * Renders `images/demo.png`: runs `suite.ts` in VS Code with remote debugging
  * enabled, screenshots the workbench over the Chrome DevTools Protocol while
- * the suite debugs `train.py` with dims off and on, then encodes with ffmpeg.
+ * the suite holds `train.py` at a breakpoint with dims off and on, then stacks
+ * the last screenshot of each phase with ffmpeg.
  */
 
 const CDP_PORT = 9339;
 const WIDTH = 1280;
 const HEIGHT = 720;
-const FRAME_INTERVAL_MS = 100;
-const FPS = 1000 / FRAME_INTERVAL_MS;
+const CROP_TOP = 34;
+const CROP_HEIGHT = 390;
+const DIVIDER = 6;
+const CAPTURE_INTERVAL_MS = 250;
+const PHASES = ['without dims', 'with dims'];
 const SETTINGS = {
     'workbench.startupEditor': 'none',
     'workbench.tips.enabled': false,
@@ -54,7 +58,7 @@ interface CdpTarget {
 
 async function main(): Promise<void> {
     const root = path.resolve(__dirname, '../../../');
-    const output = path.join(root, 'images', 'demo.gif');
+    const output = path.join(root, 'images', 'demo.png');
     const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dims-demo-'));
     const framesDir = path.join(workDir, 'frames');
     const userDataDir = path.join(workDir, 'user-data');
@@ -80,13 +84,13 @@ async function main(): Promise<void> {
             `--remote-debugging-port=${CDP_PORT}`,
         ],
     });
-    const frames = await recording;
+    const shots = await recording;
 
-    encodeGif(framesDir, frames, output);
-    console.log(`Wrote ${output} (${frames} frames)`);
+    stack(PHASES.map((phase) => shots[phase]), output);
+    console.log(`Wrote ${output}`);
 }
 
-async function record(framesDir: string, phaseFile: string): Promise<number> {
+async function record(framesDir: string, phaseFile: string): Promise<Record<string, string>> {
     const target = await waitForWorkbench();
     const cdp = await Cdp.connect(target.webSocketDebuggerUrl);
     await cdp.send('Emulation.setDeviceMetricsOverride', {
@@ -96,29 +100,31 @@ async function record(framesDir: string, phaseFile: string): Promise<number> {
         mobile: false,
     });
 
-    let frame = 0;
+    const shots: Record<string, string> = {};
     let caption = '';
     for (;;) {
         const phase = fs.existsSync(phaseFile) ? fs.readFileSync(phaseFile, 'utf-8') : '';
         if (phase === 'done') {
             break;
         }
-        if (phase === 'layout' && caption !== 'layout') {
+        if (phase !== caption) {
             caption = phase;
-            await layout(cdp);
-        } else if (phase && phase !== caption) {
-            caption = phase;
-            await cdp.send('Runtime.evaluate', { expression: captionScript(caption) });
+            if (caption === 'layout') {
+                await layout(cdp);
+            } else if (PHASES.includes(caption)) {
+                await cdp.send('Runtime.evaluate', { expression: captionScript(caption) });
+            }
         }
         const started = Date.now();
-        if (caption && caption !== 'layout') {
+        if (PHASES.includes(caption)) {
             const { data } = await cdp.send('Page.captureScreenshot', { format: 'png' });
-            fs.writeFileSync(path.join(framesDir, `${String(frame++).padStart(5, '0')}.png`), Buffer.from(data, 'base64'));
+            shots[caption] = path.join(framesDir, `${caption.replace(/ /g, '-')}.png`);
+            fs.writeFileSync(shots[caption], Buffer.from(data, 'base64'));
         }
-        await sleep(Math.max(0, FRAME_INTERVAL_MS - (Date.now() - started)));
+        await sleep(Math.max(0, CAPTURE_INTERVAL_MS - (Date.now() - started)));
     }
     cdp.close();
-    return frame;
+    return shots;
 }
 
 async function layout(cdp: Cdp): Promise<void> {
@@ -151,7 +157,7 @@ function captionScript(text: string): string {
             el = document.createElement('div');
             el.id = 'dims-demo-caption';
             Object.assign(el.style, {
-                position: 'fixed', top: '10px', right: '16px', zIndex: '100000',
+                position: 'fixed', top: '64px', right: '24px', zIndex: '100000',
                 padding: '6px 14px', borderRadius: '6px', color: '#fff',
                 font: '600 18px system-ui, sans-serif', pointerEvents: 'none',
             });
@@ -179,15 +185,16 @@ async function waitForWorkbench(): Promise<CdpTarget> {
     }
 }
 
-function encodeGif(framesDir: string, frames: number, output: string): void {
-    if (frames === 0) {
-        throw new Error('No frames captured');
+function stack(shots: (string | undefined)[], output: string): void {
+    if (shots.some((shot) => shot === undefined)) {
+        throw new Error('Missing a screenshot for one of the phases');
     }
-    const input = path.join(framesDir, '%05d.png');
-    const filters = `fps=${FPS},scale=${WIDTH}:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=full[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle`;
+    const filters =
+        `[0]crop=${WIDTH}:${CROP_HEIGHT}:0:${CROP_TOP},pad=${WIDTH}:${CROP_HEIGHT + DIVIDER}:0:0:color=0x3c3c3c[a];` +
+        `[1]crop=${WIDTH}:${CROP_HEIGHT}:0:${CROP_TOP}[b];[a][b]vstack`;
     const result = cp.spawnSync(
         'ffmpeg',
-        ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', input, '-filter_complex', filters, output],
+        ['-y', '-loglevel', 'error', '-i', shots[0]!, '-i', shots[1]!, '-filter_complex', filters, '-frames:v', '1', output],
         { stdio: 'inherit' },
     );
     if (result.status !== 0) {

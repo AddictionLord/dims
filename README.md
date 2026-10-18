@@ -20,7 +20,7 @@ Stop typing `.shape` in the debug console.
 
 ---
 
-![dims demo: the same breakpoint without and with dims](images/demo.gif)
+![The same breakpoint without dims (top) and with dims (bottom)](images/demo.png)
 
 ```text
 VARIABLES                                   VARIABLES  (with dims)
@@ -106,7 +106,7 @@ npm ci && npm run compile && npx vsce package        # extension
 pip install -r requirements-dev.txt                  # plugin tests
 python -m pytest tests
 npm test                                             # end-to-end, needs python3 with numpy
-npm run demo                                         # re-record images/demo.gif, needs numpy, pandas, torch and ffmpeg
+npm run demo                                         # re-render images/demo.png, needs numpy, pandas, torch and ffmpeg
 ```
 
 CI runs the plugin tests against real pydevd on Linux, macOS and Windows (Python 3.9 and 3.13, PyTorch on Linux 3.13), plus ruff and `vsce package`. The end-to-end test (`npm test`) launches VS Code with the Python Debugger extension, stops at a breakpoint in `src/test/fixture/script.py` and checks the values the Variables view receives; set `DIMS_E2E_PYTHON` to pick the interpreter.
