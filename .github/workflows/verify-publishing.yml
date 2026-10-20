@@ -1,0 +1,32 @@
+name: Verify publishing
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - if: vars.AZURE_CLIENT_ID == '' || vars.AZURE_TENANT_ID == ''
+        run: echo "::error::AZURE_CLIENT_ID / AZURE_TENANT_ID repo variables are missing" && exit 1
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+      - run: npx vsce verify-pat provaznik --azure-credential
+      - if: env.OVSX_PAT == ''
+        run: echo "::error::OVSX_PAT repo secret is missing" && exit 1
+      - run: npx ovsx verify-pat provaznik
