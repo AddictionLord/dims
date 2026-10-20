@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.6 (2026-10-20)
+
+- Fix: Set Value in the Variables and Watch views evaluated the shown dims prefix, raising `TypeError: unhashable type: 'list'` for arrays and silently replacing lists with a tuple ([#13](https://github.com/marekprovaznik/dims/issues/13)). The prefix is now stripped before pydevd evaluates the new value.
+- End-to-end test for Set Value; manual *Verify publishing* workflow that checks Marketplace and Open VSX credentials without publishing.
+
 ## 0.1.5 (2026-10-18)
 
 - README: static before/after screenshot instead of the demo GIF.

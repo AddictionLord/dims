@@ -5,9 +5,17 @@ import numpy as np
 import pandas as pd
 import pytest
 from _pydevd_bundle import pydevd_xml
+from _pydevd_bundle._debug_adapter.pydevd_schema import (
+    SetExpressionArguments,
+    SetExpressionRequest,
+    SetVariableArguments,
+    SetVariableRequest,
+)
 from _pydevd_bundle.pydevd_extension_api import StrPresentationProvider
 from _pydevd_bundle.pydevd_extension_utils import extensions_of_type
+from _pydevd_bundle.pydevd_process_net_command_json import PyDevJsonCommandProcessor
 from _pydevd_bundle.pydevd_safe_repr import SafeRepr
+from pydevd_plugins.extensions import pydevd_plugin_dims
 
 
 class BrokenLen:
@@ -75,3 +83,41 @@ def test_torch_tensor() -> None:
     """Tensors show torch.Size as a list."""
     torch = pytest.importorskip("torch")
     assert display(torch.zeros(2, 3)).startswith("{[2, 3]}, tensor(")
+
+
+@pytest.mark.parametrize(
+    ("shown", "evaluated"),
+    [
+        ("{3}, [1, 2, 3]", "[1, 2, 3]"),
+        ("{[2, 3]}, np.ones((2, 3))", "np.ones((2, 3))"),
+        ("{[]}, np.array(1.0)", "np.array(1.0)"),
+        ("[4, 5]", "[4, 5]"),
+        ("{3}", "{3}"),
+        ("x + {3}, 1", "x + {3}, 1"),
+    ],
+)
+def test_strip_dims(shown: str, evaluated: str) -> None:
+    """Only a leading dims prefix is removed from a Set Value expression."""
+    assert pydevd_plugin_dims.strip_dims(shown) == evaluated
+
+
+def test_set_value_handlers_are_patched() -> None:
+    """Set Value in the Variables and Watch views goes through the wrapper."""
+    for name in pydevd_plugin_dims.SET_VALUE_HANDLERS:
+        assert getattr(getattr(PyDevJsonCommandProcessor, name), "_dims_patched", False), name
+
+
+@pytest.mark.parametrize(
+    "request_",
+    [
+        SetVariableRequest(SetVariableArguments(variablesReference=1, name="items", value="{3}, [1, 2, 3]")),
+        SetExpressionRequest(SetExpressionArguments(expression="items", value="{3}, [1, 2, 3]")),
+    ],
+)
+def test_set_value_strips_prefix(request_: Any) -> None:
+    """The displayed text is evaluated without the prefix instead of becoming a tuple."""
+    seen = []
+    handler = pydevd_plugin_dims.wrap_set_value(lambda self, py_db, request: seen.append(request.arguments.value))
+    handler(None, None, request_)
+    assert seen == ["[1, 2, 3]"]
+    assert eval(seen[0]) == [1, 2, 3]
