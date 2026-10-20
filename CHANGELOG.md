@@ -4,6 +4,8 @@
 
 - Fix: Set Value in the Variables and Watch views evaluated the shown dims prefix, raising `TypeError: unhashable type: 'list'` for arrays and silently replacing lists with a tuple ([#13](https://github.com/marekprovaznik/dims/issues/13)). The prefix is now stripped before pydevd evaluates the new value.
 - End-to-end test for Set Value; manual *Verify publishing* workflow that checks Marketplace and Open VSX credentials without publishing.
+- README badges on the Marketplace page work again (retired shields.io Marketplace badges replaced); Open VSX badge in green.
+- `RELEASING.md`: release steps and publishing credentials.
 
 ## 0.1.5 (2026-10-18)
 
