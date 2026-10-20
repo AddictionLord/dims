@@ -9,9 +9,14 @@ Examples:
     DataFrame:  {[2, 1]},    a ...
     list:       {3}, [1, 2, 3]
     str, bytes: unchanged
+
+Set Value in the Variables and Watch views starts from the displayed text, so
+the prefix is stripped from setVariable/setExpression values before pydevd
+evaluates them.
 """
 
 import collections.abc
+import re
 import sys
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -24,12 +29,22 @@ try:
 except Exception:
     pydevd_plugin_pandas_types = None
 
+try:
+    from _pydevd_bundle.pydevd_process_net_command_json import PyDevJsonCommandProcessor
+except Exception:
+    PyDevJsonCommandProcessor = None
+
 EXCLUDED_TYPES: Tuple[type, ...] = (str, bytes, bytearray)
 PLAIN_CONTEXTS: Tuple[str, ...] = ("clipboard",)
 PANDAS_PROVIDER_NAMES: List[str] = [
     "PandasDataFrameTypeResolveProvider",
     "PandasSeriesTypeResolveProvider",
 ]
+SET_VALUE_HANDLERS: List[str] = [
+    "on_setvariable_request",
+    "on_setexpression_request",
+]
+DIMS_PREFIX = re.compile(r"\{(?:\[[\d, ]*\]|\d+)\}, ")
 
 _safe_repr = SafeRepr()
 
@@ -49,6 +64,11 @@ def with_dims(val: Any, text: str) -> str:
     if dims is None:
         return text
     return "%s, %s" % (dims, text)
+
+
+def strip_dims(text: str) -> str:
+    match = DIMS_PREFIX.match(text)
+    return text[match.end() :] if match else text
 
 
 class DimsShapeStr:
@@ -85,9 +105,36 @@ def wrap_get_str(get_str: Callable[[Any, Any], str]) -> Callable[[Any, Any], str
     return get_str_with_dims
 
 
+def patch_set_value_handlers() -> None:
+    if PyDevJsonCommandProcessor is None:
+        return
+
+    for name in SET_VALUE_HANDLERS:
+        handler = getattr(PyDevJsonCommandProcessor, name, None)
+        if handler is None or getattr(handler, "_dims_patched", False):
+            continue
+        setattr(PyDevJsonCommandProcessor, name, wrap_set_value(handler))
+
+
+def wrap_set_value(handler: Callable[[Any, Any, Any], Any]) -> Callable[[Any, Any, Any], Any]:
+    def set_value_without_dims(self: Any, py_db: Any, request: Any) -> Any:
+        arguments = request.arguments
+        value = getattr(arguments, "value", None)
+        if isinstance(value, str):
+            arguments.value = strip_dims(value)
+        return handler(self, py_db, request)
+
+    set_value_without_dims._dims_patched = True
+    return set_value_without_dims
+
+
 if not sys.platform.startswith("java"):
     StrPresentationProvider.register(DimsShapeStr)
     try:
         patch_pandas_providers()
     except Exception:
         pydev_log.exception("dims: unable to patch pandas providers")
+    try:
+        patch_set_value_handlers()
+    except Exception:
+        pydev_log.exception("dims: unable to patch set value handlers")

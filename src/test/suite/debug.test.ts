@@ -6,6 +6,8 @@ import * as vscode from 'vscode';
 /**
  * End-to-end: launch a real debugpy session on `fixture/script.py`, stop at a
  * breakpoint and read the DAP `variables` response that backs the Variables view.
+ * Set Value is exercised with `setVariable`, the request VS Code sends after the
+ * user edits the displayed value.
  */
 
 interface Stop {
@@ -63,6 +65,15 @@ suite('dims in the Variables view', () => {
         assert.strictEqual(locals['items'], '{3}, [1, 2, 3]');
     });
 
+    test('Set Value ignores the dims prefix of the displayed text', async () => {
+        const { locals } = await debugAndInspect(workspace, script, {}, {
+            items: '{3}, [1, 2, 3, 4]',
+            matrix: '{[2, 3]}, np.ones((3, 2))',
+        });
+        assert.strictEqual(locals['items'], '{4}, [1, 2, 3, 4]');
+        assert.match(locals['matrix'], /^\{\[3, 2\]\}, array\(\[\[1\., 1\.\]/);
+    });
+
     test('dims.enabled = false leaves values untouched', async () => {
         await setEnabled(false);
         const { locals } = await debugAndInspect(workspace, script);
@@ -79,6 +90,7 @@ async function debugAndInspect(
     folder: vscode.WorkspaceFolder,
     program: string,
     extra: Record<string, unknown> = {},
+    setValues: Record<string, string> = {},
 ): Promise<Inspection> {
     const stopped = waitForStop();
     const started = await vscode.debug.startDebugging(folder, {
@@ -97,7 +109,12 @@ async function debugAndInspect(
     try {
         const { stackFrames } = await session.customRequest('stackTrace', { threadId, startFrame: 0, levels: 1 });
         const frameId: number = stackFrames[0].id;
-        const locals = await readLocals(session, frameId);
+        const { scopes } = await session.customRequest('scopes', { frameId });
+        const variablesReference: number = scopes[0].variablesReference;
+        for (const [name, value] of Object.entries(setValues)) {
+            await session.customRequest('setVariable', { variablesReference, name, value });
+        }
+        const locals = await readLocals(session, variablesReference);
         const { result } = await session.customRequest('evaluate', {
             expression: '__import__("os").environ.get("PYTHONPATH", "")',
             frameId,
@@ -128,11 +145,8 @@ function waitForStop(): Promise<Stop> {
     });
 }
 
-async function readLocals(session: vscode.DebugSession, frameId: number): Promise<Record<string, string>> {
-    const { scopes } = await session.customRequest('scopes', { frameId });
-    const { variables } = await session.customRequest('variables', {
-        variablesReference: scopes[0].variablesReference,
-    });
+async function readLocals(session: vscode.DebugSession, variablesReference: number): Promise<Record<string, string>> {
+    const { variables } = await session.customRequest('variables', { variablesReference });
     return Object.fromEntries((variables as DapVariable[]).map((v) => [v.name, v.value]));
 }
 
