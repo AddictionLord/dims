@@ -17,6 +17,10 @@ Stop typing `.shape` in the debug console.
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85%2B-007ACC?logo=visualstudiocode&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-lightgrey)
 
+dims is free and MIT-licensed. If it saves you a few `.shape` calls, you can support it:
+
+<a href="https://buymeacoffee.com/provaznik"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="40"></a>
+
 </div>
 
 ---

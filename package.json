@@ -2,7 +2,7 @@
   "name": "dims",
   "displayName": "dims",
   "description": "See array shapes instantly in the debug variables view",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "provaznik",
   "license": "MIT",
   "repository": {
@@ -72,6 +72,9 @@
     "typescript": "^5.3.0"
   },
   "homepage": "https://github.com/marekprovaznik/dims#readme",
+  "sponsor": {
+    "url": "https://buymeacoffee.com/provaznik"
+  },
   "bugs": {
     "url": "https://github.com/marekprovaznik/dims/issues"
   }
