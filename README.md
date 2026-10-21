@@ -117,7 +117,7 @@ CI runs the plugin tests against real pydevd on Linux, macOS and Windows (Python
 
 ## Support
 
-dims is free and MIT-licensed, and stays that way. If it saved you some debugging time, you can buy me a coffee — thank you!
+dims is free and MIT-licensed. If it saves you a few `.shape` calls, you can support it:
 
 <a href="https://buymeacoffee.com/provaznik"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="40"></a>
 
