@@ -2,7 +2,7 @@
 
 ## 0.1.7 (2026-10-21)
 
-- Support link: Buy Me a Coffee button at the top of the README, a *Sponsor* button on the extension's details page in VS Code (`sponsor` in `package.json`), and the GitHub *Sponsor* button (`.github/FUNDING.yml`).
+- Support link: Buy Me a Coffee badge in the README header and a *Support* section with the button, a *Sponsor* button on the extension's details page in VS Code (`sponsor` in `package.json`), and the GitHub *Sponsor* button (`.github/FUNDING.yml`).
 
 ## 0.1.6 (2026-10-20)
 
