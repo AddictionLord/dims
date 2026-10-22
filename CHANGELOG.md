@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7 (2026-10-21)
+
+- Support link: Buy Me a Coffee badge in the README header and a *Support* section with the button, a *Sponsor* button on the extension's details page in VS Code (`sponsor` in `package.json`), and the GitHub *Sponsor* button (`.github/FUNDING.yml`).
+
 ## 0.1.6 (2026-10-20)
 
 - Fix: Set Value in the Variables and Watch views evaluated the shown dims prefix, raising `TypeError: unhashable type: 'list'` for arrays and silently replacing lists with a tuple ([#13](https://github.com/marekprovaznik/dims/issues/13)). The prefix is now stripped before pydevd evaluates the new value.

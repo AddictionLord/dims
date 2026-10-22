@@ -16,6 +16,7 @@ Stop typing `.shape` in the debug console.
 ![Python](https://img.shields.io/badge/python-3.9%20%E2%80%93%203.13-3776AB?logo=python&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85%2B-007ACC?logo=visualstudiocode&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-lightgrey)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/provaznik)
 
 </div>
 
@@ -113,6 +114,14 @@ npm run demo                                         # re-render images/demo.png
 ```
 
 CI runs the plugin tests against real pydevd on Linux, macOS and Windows (Python 3.9 and 3.13, PyTorch on Linux 3.13), plus ruff and `vsce package`. The end-to-end test (`npm test`) launches VS Code with the Python Debugger extension, stops at a breakpoint in `src/test/fixture/script.py` and checks the values the Variables view receives; set `DIMS_E2E_PYTHON` to pick the interpreter.
+
+## Support
+
+dims is free and MIT-licensed. If it saves you a few `.shape` calls, you can support it:
+
+<a href="https://buymeacoffee.com/provaznik"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="40"></a>
+
+Bug reports and ideas in [Issues](https://github.com/marekprovaznik/dims/issues) help just as much.
 
 ## License
 
