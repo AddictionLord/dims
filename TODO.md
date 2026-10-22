@@ -11,5 +11,5 @@
 - [ ] **After 2026-11-19**: run *Verify publishing* once. The Azure free-trial subscription expires then; publishing should not depend on it, so confirm that it still works.
 - [x] **Publish from CI**: `release.yml` publishes to the Marketplace when the `AZURE_CLIENT_ID` / `AZURE_TENANT_ID` repo variables exist and to Open VSX when the `OVSX_PAT` secret exists.
 - [x] Retire `/fix-dims` and the manual debugpy patch once dims is installed from the Marketplace.
-- [ ] **Buy Me a Coffee**: create the page `buymeacoffee.com/provaznik` (handle must match the links in README, `package.json` and `.github/FUNDING.yml`) and connect Stripe before releasing 0.1.7.
+- [x] **Buy Me a Coffee**: page <https://buymeacoffee.com/provaznik> live with Stripe payouts (2026-10-22); linked from the README, `package.json` `sponsor` and `.github/FUNDING.yml`.
 - [ ] **Promotion**: short posts with the before/after screenshot on r/vscode, r/Python, r/MachineLearning (Project flair) and r/learnmachinelearning; consider a Show HN. Track Marketplace *installs* (not Open VSX downloads, which are mostly crawlers) before and after.
