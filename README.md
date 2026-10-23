@@ -79,6 +79,11 @@ Then start any Python **launch** debug session.
 
 dims uses debugpy's [pydevd extension API](https://github.com/microsoft/debugpy/tree/main/src/debugpy/_vendored/pydevd/pydevd_plugins/extensions): a `StrPresentationProvider` that prepends the shape to pydevd's own value string. Nothing is patched on disk, so debugpy updates don't remove it.
 
+## Similar extensions
+
+- [Tensor Debugger Shape](https://marketplace.visualstudio.com/items?itemName=miccho.tensor-debugger-shape) also shows shapes in the Variables view, but for PyTorch only, by replacing `torch.Tensor.__repr__` in the running program (so `print(x)` and logs change too). dims hooks into the debugger instead and leaves your program's output alone.
+- [Visible Shape](https://marketplace.visualstudio.com/items?itemName=teassassin.visible-shape) and [Array Inspector](https://marketplace.visualstudio.com/items?itemName=ArnoGobbin.array-inspector) show shape, dtype and device in a separate sidebar panel — more detail per variable, but not inline in the Variables view.
+
 ## Known limitations
 
 dims can only add its plugin to processes the debugger **launches**. These are not covered automatically:
